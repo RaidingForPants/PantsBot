@@ -10,11 +10,11 @@ class YoutubeCog(commands.Cog):
         self.bot = bot
 
     @commands.slash_command(description="Register for channel updates")
-    async def get_channel_updates(self, ctx, yt_channel_id, notification_channel=None):
+    async def get_channel_updates(self, ctx, yt_channel_id, notification_channel=None, message=""):
         if notification_channel is None:
             notification_channel = ctx.channel.id
         #check if yt_channel_id is valid
-        YoutubeAPI.update_channel_registry(channel_id, notification_channel)
+        YoutubeAPI.update_channel_registry(yt_channel_id, notification_channel, message)
         YoutubeAPI.save_channel_registry()
         await ctx.send("Registration successful!")
         
