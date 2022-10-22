@@ -16,7 +16,7 @@ def _log_info(message):
             f.write("\n")
     
 def _log_error(message, err):
-    message = _error_format(message, err)
+    message = _error_format(message, err, to_file=True)
     if error_file_name is None:
         print(message)
     else:
@@ -33,8 +33,11 @@ def _print_error(message, err):
 def _info_format(message):
     return f"[INFO] {message}"
     
-def _error_format(message, err):
-    f_str = f"\033[91m[ERROR] {message}: {type(err).__name__}: {err}\033[0m"
+def _error_format(message, err, to_file=False):
+    if not to_file:
+        f_str = f"\033[91m[ERROR] {message}: {type(err).__name__}: {err}\033[0m"
+    else:
+        f_str = f"[ERROR] {message}: {type(err).__name__}: {err}"
     return f_str
 
 def _try_add_cog(name):
@@ -67,8 +70,8 @@ def start():
     bot.run(TOKEN)
     
 bot = commands.InteractionBot(intents=_get_intents(), sync_commands_debug=True)
-log_file_name = None
-error_file_name = None
+log_file_name = "test_log.txt"
+error_file_name = "test_error.txt"
 
 # -------------------- EVENTS START ---------------------
 
