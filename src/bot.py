@@ -4,6 +4,7 @@ import sys
 from disnake.ext import commands
 from dotenv import load_dotenv
 import importlib
+import colorama
     
 def _log_info(message):
     message = _info_format(message)
@@ -14,8 +15,8 @@ def _log_info(message):
             f.write(message)
             f.write("\n")
     
-def _log_error(message):
-    message = _error_format(message)
+def _log_error(message, err):
+    message = _error_format(message, err)
     if error_file_name is None:
         print(message)
     else:
@@ -26,14 +27,15 @@ def _log_error(message):
 def _print_info(message):
     print(_info_format(message))
     
-def _print_error(message):
-    print(_error_format(message))
+def _print_error(message, err):
+    print(_error_format(message, err))
     
 def _info_format(message):
-    return message
+    return f"[INFO] {message}"
     
-def _error_format(message):
-    return message
+def _error_format(message, err):
+    f_str = f"\033[91m[ERROR] {message}: {type(err).__name__}: {err}\033[0m"
+    return f_str
 
 def _try_add_cog(name):
     try:
@@ -42,7 +44,7 @@ def _try_add_cog(name):
         _print_info("Loaded "+name)
         bot.add_cog(cog_cls(bot))
     except ModuleNotFoundError as err:
-        _log_error(message=f"Failed to load cog {name}: {err}")
+        _log_error(f"Failed to load cog {name}", err)
         
 def _load_cogs():
     _log_info("Loading cogs...")
@@ -89,5 +91,6 @@ async def test(ctx):
 
 
 
-if __name__ == "__main__":	
+if __name__ == "__main__":
+    colorama.init()
     start()
