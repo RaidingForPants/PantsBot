@@ -69,8 +69,8 @@ def start():
     bot.run(TOKEN)
     
 bot = commands.InteractionBot(intents=_get_intents(), sync_commands_debug=True)
-log_file_name = None
-error_file_name = None
+log_file_name = "test_log.txt"
+error_file_name = "test_error.txt"
 
 # -------------------- EVENTS START ---------------------
 
