@@ -16,12 +16,11 @@ def _log_info(message):
             f.write("\n")
     
 def _log_error(message, err):
-    message = _error_format(message, err)
     if error_file_name is None:
-        print(message)
+        print(_error_format(message, err))
     else:
         with open(error_file_name, "a") as f:
-            f.write(message)
+            f.write(_error_format(message, err, to_file=True))
             f.write("\n")
         
 def _print_info(message):
@@ -33,8 +32,11 @@ def _print_error(message, err):
 def _info_format(message):
     return f"[INFO] {message}"
     
-def _error_format(message, err):
-    f_str = f"\033[91m[ERROR] {message}: {type(err).__name__}: {err}\033[0m"
+def _error_format(message, err, to_file=False):
+    if not to_file:
+        f_str = f"\033[91m[ERROR] {message}: {type(err).__name__}: {err}\033[0m"
+    else:
+        f_str = f"[ERROR] {message}: {type(err).__name__}: {err}"
     return f_str
 
 def _try_add_cog(name):
