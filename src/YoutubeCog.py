@@ -2,6 +2,7 @@ from disnake.ext import commands, tasks
 import youtube
 from channel_registry import ChannelRegistry
 from upload_watcher import UploadWatcher
+import permissions
 
 class YoutubeCog(commands.Cog):
     def __init__(self, bot):
@@ -11,6 +12,7 @@ class YoutubeCog(commands.Cog):
         self.scheduled_check.start()
 
     @commands.slash_command()
+    @permissions.requires_administrator()
     async def get_channel_updates(self, ctx, yt_channel_id, notification_channel=None, message=""):
     
         """
@@ -31,6 +33,7 @@ class YoutubeCog(commands.Cog):
         await ctx.send("Registration successful!")
         
     @commands.slash_command()
+    @permissions.requires_administrator()
     async def stop_channel_updates(self, ctx, yt_channel_id, notification_channel=None):
     
         """
