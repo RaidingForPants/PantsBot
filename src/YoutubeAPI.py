@@ -50,8 +50,8 @@ def check_for_new_videos():
         video_id = _get_most_recent_video(channelId) #for the most recent video
         if video_id != recent_video_ids[channelId]: #if it's a different video
             channels = []
-            for notification_channel in channel_registry[channelId]: #collate every channel 
-                channels.append(notification_channel)
+            for entry in channel_registry[channelId]: #collate every channel 
+                channels.append(entry)
             updates[video_id] = channels
     return updates
                 
