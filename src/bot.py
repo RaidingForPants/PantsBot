@@ -4,14 +4,14 @@ from disnake.ext import commands
 import environment
 import importlib
 import colorama
-from logger import Logger
+import logger
 import permissions
 
 def _try_add_cog(name):
     try:
         importlib.import_module(str(name))
         cog_cls = getattr(sys.modules[name], name)
-        logger.print_info("Loaded "+name)
+        logger.log_info("Loaded "+name)
         bot.add_cog(cog_cls(bot))
     except ModuleNotFoundError as err:
         logger.log_error(f"Failed to load cog {name}", err)
@@ -38,7 +38,7 @@ def start():
 bot = commands.InteractionBot(intents=_get_intents(), sync_commands_debug=True)
 log_file_name = None
 error_file_name = None
-logger = Logger(log_file_name, error_file_name)
+logger = logger.get_instance()
 
 
 

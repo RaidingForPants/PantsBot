@@ -4,6 +4,7 @@ from channel_registry import ChannelRegistry
 from upload_watcher import UploadWatcher
 import permissions
 import channel_utils
+import logger
 
 class YoutubeCog(commands.Cog):
     def __init__(self, bot):
@@ -11,6 +12,7 @@ class YoutubeCog(commands.Cog):
         self.registry = ChannelRegistry()
         self.watcher = UploadWatcher(self.registry)
         self.scheduled_check.start()
+        self.logger = logger.get_instance()
 
     @commands.slash_command()
     @permissions.requires_administrator
@@ -59,7 +61,7 @@ class YoutubeCog(commands.Cog):
     async def scheduled_check(self):
         updates = self.watcher.check_for_new_videos()
         if updates:
-            print("New video(s) uploaded!")
+            logger.log_info("New video(s) uploaded!")
         for video_id in updates.keys():
             url = youtube.get_video_by_id(video_id)
             for entry in updates[video_id]: #post the notification_message in the notification_channel

@@ -1,3 +1,12 @@
+import environment
+
+_logger = None
+
+def get_instance():
+    global _logger
+    if _logger == None:
+        _logger = Logger(environment.LOG_FILENAME, environment.ERROR_FILENAME)
+    return _logger
 
 class Logger:
 
