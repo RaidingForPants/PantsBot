@@ -32,14 +32,14 @@ class YoutubeCog(commands.Cog):
     async def yt_test(self, ctx):
         await ctx.send("youtube cog success")
     
-    @tasks.loop(minutes=1.0)
+    @tasks.loop(minutes=60.0)
     async def scheduled_check(self):
         updates = self.watcher.check_for_new_videos()
         print(updates)
         for video_id in updates.keys():
-            url = youtube.get_video_by_id()
-            for registration in updates[video_id]: #post the notification_message in the notification_channel
-                channel = bot.get_channel(registration['notification_channel'])
-                message = registration['notification_message'] + "\n" + url
+            url = youtube.get_video_by_id(video_id)
+            for entry in updates[video_id]: #post the notification_message in the notification_channel
+                channel = bot.get_channel(entry['notification_channel'])
+                message = entry['notification_message'] + "\n" + url
                 await channel.send(message)
         

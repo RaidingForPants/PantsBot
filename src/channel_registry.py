@@ -32,14 +32,14 @@ class ChannelRegistry:
             
     def remove(self, channelId, notification_channel):
         try:
-            for entry in channel_registry[channelId]:
+            for entry in self.channel_registry[channelId]:
                 if entry['notification_channel'] == notification_channel:
                     self.channel_registry[channelId].remove(entry)
                     if len(self.channel_registry[channelId]) == 0:
                         del self.channel_registry[channelId]
                     break
-        except:
-            pass
+        except Exception as err:
+            print(err)
 
     def get_channels(self):
         return self.channel_registry.keys()
