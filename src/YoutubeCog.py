@@ -14,10 +14,19 @@ class YoutubeCog(commands.Cog):
     async def get_channel_updates(self, ctx, yt_channel_id, notification_channel=None, message=""):
         if notification_channel is None:
             notification_channel = ctx.channel.id
-        #check if yt_channel_id is valid
         YoutubeAPI.update_channel_registry(yt_channel_id, notification_channel, message)
         YoutubeAPI.save_channel_registry()
         await ctx.send("Registration successful!")
+        
+    @commands.slash_command(description="Cancel channel updates")
+    async def stop_channel_updates(self, ctx, yt_channel_id, notification_channel=None):
+        if notification_channel is None:
+            for channel in ctx.guild.channels:
+                YoutubeAPI.remove_channel_registry(yt_channel_id, channel.id) 
+        else:
+            YoutubeAPI.remove_channel_registry(yt_channel_id, notification_channel)
+        YoutubeAPI.save_channel_registry()
+        await ctx.send("Removed registration!")
         
     @commands.slash_command(description="youtube test")
     async def yt_test(self, ctx):

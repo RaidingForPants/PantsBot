@@ -36,6 +36,18 @@ def update_channel_registry(channelId, notification_channel, message):
         new_entry['notification_message'] = message
         channel_registry[channelId].append(new_entry)
         recent_video_ids[channelId] = _get_most_recent_video(channelId)
+        
+def remove_channel_registry(channelId, notification_channel):
+    global channel_registry
+    try:
+        for entry in channel_registry[channelId]:
+            if entry['notification_channel'] == notification_channel:
+                channel_registry[channelId].remove(entry)
+                if len(channel_registry[channelId]) == 0:
+                    del channel_registry[channelId]
+                break
+    except:
+        pass
     
 def load_recent_video_ids():
     global recent_video_ids, channel_registry
