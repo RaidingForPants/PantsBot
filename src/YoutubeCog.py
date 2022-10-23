@@ -12,18 +12,12 @@ class YoutubeCog(commands.Cog):
         self.scheduled_check.start()
 
     @commands.slash_command()
-    @permissions.requires_administrator()
+    @permissions.requires_administrator
     async def get_channel_updates(self, ctx, yt_channel_id, notification_channel=None, message=""):
     
         """
         Register for channel updates
-        
-        Parameters
-        ----------
-        yt_channel_id: The id of the YouTube channel to monitor
-        notification_channel: The Discord channel to post the video notification to. Default: current channel.
-        message: Message to display along with the video URL
-        
+
         """
     
         if notification_channel is None:
@@ -33,16 +27,11 @@ class YoutubeCog(commands.Cog):
         await ctx.send("Registration successful!")
         
     @commands.slash_command()
-    @permissions.requires_administrator()
+    @permissions.requires_administrator
     async def stop_channel_updates(self, ctx, yt_channel_id, notification_channel=None):
     
         """
         Cancels channel updates
-        
-        Parameters
-        ----------
-        yt_channel_id: The id of the YouTube channel being monitored
-        notification_channel: The Discord channel that is receiving video notifications. Not entering a channel stops all notifications to this server.
         
         """
     

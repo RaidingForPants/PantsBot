@@ -6,6 +6,7 @@ import environment
 import importlib
 import colorama
 from logger import Logger
+import permissions
 
 def _try_add_cog(name):
     try:
@@ -58,6 +59,7 @@ async def on_ready():
 # -------------------- COMMANDS START -------------------
 
 @bot.slash_command(description="Test command")
+@permissions.requires_administrator
 async def test(ctx):
     await ctx.send("Success!")
 
