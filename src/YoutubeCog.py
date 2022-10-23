@@ -28,10 +28,9 @@ class YoutubeCog(commands.Cog):
         updates = YoutubeAPI.check_for_new_videos()
         print(updates)
         for video_id in updates.keys():
-            url = YoutubeAPI._get_video_by_id
-            for registration in updates[video_id]:
-                #post the notification_message in the notification_channel
-                channel = bot.get_channel(registration['notification_channel']
+            url = YoutubeAPI._get_video_by_id()
+            for registration in updates[video_id]: #post the notification_message in the notification_channel
+                channel = bot.get_channel(registration['notification_channel'])
                 message = registration['notification_message'] + "\n" + url
                 await channel.send(message)
         
