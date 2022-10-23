@@ -3,6 +3,7 @@ import youtube
 from channel_registry import ChannelRegistry
 from upload_watcher import UploadWatcher
 import permissions
+import channel_utils
 
 class YoutubeCog(commands.Cog):
     def __init__(self, bot):
@@ -19,9 +20,14 @@ class YoutubeCog(commands.Cog):
         Register for channel updates
 
         """
-    
+        
         if notification_channel is None:
             notification_channel = ctx.channel.id
+        else:
+            notification_channel = channel_utils.convert_to_int(notification_channel)
+            if notification_channel == None:
+               await ctx.send("Invalid notification channel")
+               return
         self.registry.update(yt_channel_id, notification_channel, message)
         self.registry.save()
         await ctx.send("Registration successful!")

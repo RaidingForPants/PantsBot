@@ -1,4 +1,3 @@
-import os
 import disnake
 import sys
 from disnake.ext import commands
@@ -49,7 +48,7 @@ logger = Logger(log_file_name, error_file_name)
 
 @bot.event
 async def on_ready():
-	logger.log_info("Connected to Discord")
+    logger.log_info("Connected to Discord")
     
 # -------------------- EVENTS END -----------------------
 
