@@ -18,9 +18,7 @@ def _try_add_cog(name):
         
 def _load_cogs():
     logger.log_info("Loading cogs...")
-    _try_add_cog("CogFake")
     _try_add_cog("YoutubeCog")
-    _try_add_cog("CogTest")
     
 def _get_token():
     return environment.TOKEN
@@ -57,10 +55,10 @@ async def on_ready():
 
 # -------------------- COMMANDS START -------------------
 
-@bot.slash_command(description="Test command")
-@permissions.requires_administrator
-async def test(ctx):
-    await ctx.send("Success!")
+#@bot.slash_command(description="Test command")
+#@permissions.requires_administrator
+#async def test(ctx):
+#    await ctx.send("Success!")
 
 # -------------------- COMMANDS END ---------------------
 

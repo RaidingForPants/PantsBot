@@ -51,14 +51,15 @@ class YoutubeCog(commands.Cog):
         self.registry.save()
         await ctx.send("Removed registration!")
         
-    @commands.slash_command(description="youtube test")
-    async def yt_test(self, ctx):
-        await ctx.send("youtube cog success")
+    #@commands.slash_command(description="youtube test")
+    #async def yt_test(self, ctx):
+    #    await ctx.send("youtube cog success")
     
     @tasks.loop(minutes=1.0)
     async def scheduled_check(self):
         updates = self.watcher.check_for_new_videos()
-        print(updates)
+        if updates:
+            print("New video(s) uploaded!")
         for video_id in updates.keys():
             url = youtube.get_video_by_id(video_id)
             for entry in updates[video_id]: #post the notification_message in the notification_channel

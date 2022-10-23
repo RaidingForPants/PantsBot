@@ -9,14 +9,11 @@ class UploadWatcher:
             
     def check_for_new_videos(self):
         updates = {}
-        print(self.recent_video_ids)
         for channel in self.channel_registry.get_channels(): #check each channel
             video_id = youtube.get_most_recent_video(channel) #for the most recent video
             if video_id is None:
                 continue
-            print(video_id)
             if video_id != self.recent_video_ids[channel]: #if it's a different video
-                print("New video uploaded!")
                 channels = []
                 for entry in self.channel_registry.get_entries(channel): #collate every entry for that channel 
                     channels.append(entry)
