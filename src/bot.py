@@ -5,48 +5,19 @@ from disnake.ext import commands
 import environment
 import importlib
 import colorama
-    
-def _log_info(message):
-    if log_file_name is None:
-        _print_info(message)
-    else:
-        with open(log_file_name, "a") as f:
-            f.write(_info_format(message))
-            f.write("\n")
-    
-def _log_error(message, err):
-    if error_file_name is None:
-        _print_error(message, err)
-    else:
-        with open(error_file_name, "a") as f:
-            f.write(_error_format(message, err, to_file=True))
-            f.write("\n")
-        
-def _print_info(message):
-    print(_info_format(message))
-    
-def _print_error(message, err):
-    print(_error_format(message, err))
-    
-def _info_format(message):
-    return f"[INFO] {message}"
-    
-def _error_format(message, err, to_file=False):
-    if not to_file:
-        return f"\033[91m[ERROR] {message}: {type(err).__name__}: {err}\033[0m"
-    return f"[ERROR] {message}: {type(err).__name__}: {err}"
+from logger import Logger
 
 def _try_add_cog(name):
     try:
         importlib.import_module(str(name))
         cog_cls = getattr(sys.modules[name], name)
-        _print_info("Loaded "+name)
+        logger.print_info("Loaded "+name)
         bot.add_cog(cog_cls(bot))
     except ModuleNotFoundError as err:
-        _log_error(f"Failed to load cog {name}", err)
+        logger.log_error(f"Failed to load cog {name}", err)
         
 def _load_cogs():
-    _log_info("Loading cogs...")
+    logger.log_info("Loading cogs...")
     _try_add_cog("CogFake")
     _try_add_cog("YoutubeCog")
     _try_add_cog("CogTest")
@@ -61,7 +32,7 @@ def _get_intents():
     return bot_intents
         
 def start():
-    _log_info("Starting bot")
+    logger.log_info("Starting bot")
     TOKEN = _get_token()
     _load_cogs()
     bot.run(TOKEN)
@@ -69,6 +40,7 @@ def start():
 bot = commands.InteractionBot(intents=_get_intents(), sync_commands_debug=True)
 log_file_name = None
 error_file_name = None
+logger = Logger(log_file_name, error_file_name)
 
 
 
@@ -76,7 +48,7 @@ error_file_name = None
 
 @bot.event
 async def on_ready():
-	_log_info("Connected to Discord")
+	logger.log_info("Connected to Discord")
     
 # -------------------- EVENTS END -----------------------
 
