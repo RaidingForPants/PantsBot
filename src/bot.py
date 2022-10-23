@@ -2,7 +2,7 @@ import os
 import disnake
 import sys
 from disnake.ext import commands
-from dotenv import load_dotenv
+import environment
 import importlib
 import colorama
     
@@ -52,8 +52,7 @@ def _load_cogs():
     _try_add_cog("CogTest")
     
 def _get_token():
-    load_dotenv()
-    return os.getenv('DISCORD_TOKEN')
+    return environment.TOKEN
     
 def _get_intents():
     bot_intents = disnake.Intents.default()

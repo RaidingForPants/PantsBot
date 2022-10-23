@@ -1,31 +1,31 @@
 from disnake.ext import commands, tasks
-from dotenv import load_dotenv
-import json
-import os
-import requests
-import YoutubeAPI
+import youtube
+from channel_registry import ChannelRegistry
+from upload_watcher import UploadWatcher
 
 class YoutubeCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.registry = ChannelRegistry()
+        self.watcher = UploadWatcher(self.registry)
         self.scheduled_check.start()
 
     @commands.slash_command(description="Register for channel updates")
     async def get_channel_updates(self, ctx, yt_channel_id, notification_channel=None, message=""):
         if notification_channel is None:
             notification_channel = ctx.channel.id
-        YoutubeAPI.update_channel_registry(yt_channel_id, notification_channel, message)
-        YoutubeAPI.save_channel_registry()
+        self.registry.update(yt_channel_id, notification_channel, message)
+        self.registry.save()
         await ctx.send("Registration successful!")
         
     @commands.slash_command(description="Cancel channel updates")
     async def stop_channel_updates(self, ctx, yt_channel_id, notification_channel=None):
         if notification_channel is None:
             for channel in ctx.guild.channels:
-                YoutubeAPI.remove_channel_registry(yt_channel_id, channel.id) 
+                self.registry.remove(yt_channel_id, channel.id) 
         else:
-            YoutubeAPI.remove_channel_registry(yt_channel_id, notification_channel)
-        YoutubeAPI.save_channel_registry()
+            self.registry.remove(yt_channel_id, notification_channel)
+        self.registry.save()
         await ctx.send("Removed registration!")
         
     @commands.slash_command(description="youtube test")
@@ -34,10 +34,10 @@ class YoutubeCog(commands.Cog):
     
     @tasks.loop(minutes=1.0)
     async def scheduled_check(self):
-        updates = YoutubeAPI.check_for_new_videos()
+        updates = self.watcher.check_for_new_videos()
         print(updates)
         for video_id in updates.keys():
-            url = YoutubeAPI._get_video_by_id()
+            url = youtube.get_video_by_id()
             for registration in updates[video_id]: #post the notification_message in the notification_channel
                 channel = bot.get_channel(registration['notification_channel'])
                 message = registration['notification_message'] + "\n" + url
