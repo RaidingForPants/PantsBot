@@ -28,36 +28,55 @@ class EconomyCog(commands.Cog):
     
     @commands.slash_command()
     @permissions.requires_administrator    
-    async def give_funds(self, ctx, member, amount):
+    async def give_funds(self, ctx, member, amount: int):
         guild = ctx.guild.id
         member = channel_utils.convert_to_int(member)
+        temp = await self.bot.fetch_user(member)
+        name = temp.name
         try:
             self.economy[guild].add_funds(member, amount)
         except KeyError:
             self.economy[guild] = GuildEconomy()
             self.economy[guild].add_funds(member, amount)
+        await ctx.send(f"Gave {name} {amount} munnies")
             
         
     @commands.slash_command()
     @permissions.requires_administrator        
-    async def take_funds(self, ctx, member, amount):
+    async def take_funds(self, ctx, member, amount: int):
         guild = ctx.guild.id
         member = channel_utils.convert_to_int(member)
+        temp = await self.bot.fetch_user(member)
+        name = temp.name
         try:
             self.economy[guild].remove_funds(member, amount)
         except KeyError:
             self.economy[guild] = GuildEconomy()
         except MoneyError:
             self.economy[guild].remove_all_funds(member)
+        await ctx.send(f"Took {amount} munnies from {name}")
+    
+    @commands.slash_command()
+    async def show_funds(self, ctx):
+        guild = ctx.guild.id
+        member = ctx.author.id
+        try:
+            val = self.economy[guild].get_funds(member)
+        except KeyError:
+            self.economy[guild] = GuildEconomy()
+            val = 0
+        await ctx.send(f"You have {val} munnies")
             
         
     @commands.Cog.listener()
     async def on_message(self, message):
         member = message.author.id
+        guild = message.guild.id
         try:
-            economy_obj = self.economy[message.guild.id]
+            economy_obj = self.economy[guild]
         except KeyError:
-            self.economy[message.guild.id] = GuildEconomy()
+            self.economy[guild] = GuildEconomy()
+            economy_obj = self.economy[guild]
         if member not in economy_obj.lock_list:  
             economy_obj.add_funds(member, 1)
             economy_obj.lock_user(member, duration=60)
@@ -68,13 +87,13 @@ class GuildEconomy:
         self.bank = {}
         self.lock_list = set()
         
-    def add_funds(self, member, amount):
+    def add_funds(self, member, amount: int):
         try:
             self.bank[member] += amount
         except KeyError:
             self.bank[member] = amount
         
-    def remove_funds(self, member, amount):
+    def remove_funds(self, member, amount: int):
         try:
             if self.bank[member] >= amount:
                 self.bank[member] -= amount
@@ -84,18 +103,25 @@ class GuildEconomy:
             self.bank[member] = 0
             raise MoneyError("Not enough funds!")
             
+    def get_funds(self, member):
+        try:
+            retval = self.bank[member]
+            return retval
+        except KeyError:
+            self.bank[member] = 0
+            return 0
+            
     def remove_all_funds(self, member):
         self.bank[member] = 0
+        
+    def unlock_user(self, member):
+        self.lock_list.remove(member)
             
     def lock_user(self, member, duration=None):
         self.lock_list.add(member)
         if duration is not None:
-            unlock = threading.Timer(duration, unlock_user, args=member)
+            unlock = threading.Timer(duration, self.unlock_user, args=(member,))
             unlock.start()
-        
-    def unlock_user(self, member):
-        self.lock_list.remove(member)
-        
         
 class MoneyError(Exception):
     pass
