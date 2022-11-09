@@ -39,6 +39,13 @@ class EconomyCog(commands.Cog):
     async def give_munnies(self, ctx, user, amount: int):
         """
         Gives munnies to the specified user
+                
+        Parameters
+        ----------
+        user:
+            The user to give munnies to
+        amount: :class:`int`
+            The amount of munnies to give
         """
         
         guild = ctx.guild.id
@@ -71,6 +78,13 @@ class EconomyCog(commands.Cog):
     async def take_munnies(self, ctx, user, amount: int):
         """
         Takes munnies from the specified user
+        
+        Parameters
+        ----------
+        user:
+            The user to take munnies from
+        amount: :class:`int`
+            The amount of munnies to take
         """
 
         

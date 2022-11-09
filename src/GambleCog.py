@@ -40,6 +40,11 @@ class GambleCog(commands.Cog):
     async def gamble(self, ctx, amount: int):
         """
         Risk your hard-earned munnies to win big!
+        
+        Parameters
+        ----------
+        amount: :class:`int`
+            The amount of money to wager
         """
         economy = self.bot.get_cog("EconomyCog")
         if economy is not None:
