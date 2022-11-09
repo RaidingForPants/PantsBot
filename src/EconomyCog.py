@@ -33,11 +33,7 @@ class EconomyCog(commands.Cog):
         member = channel_utils.convert_to_int(member)
         temp = await self.bot.fetch_user(member)
         name = temp.name
-        try:
-            self.economy[guild].add_funds(member, amount)
-        except KeyError:
-            self.economy[guild] = GuildEconomy()
-            self.economy[guild].add_funds(member, amount)
+        self._give_funds(guild, member, amount)
         await ctx.send(f"Gave {name} {amount} munnies")
             
         
@@ -49,9 +45,7 @@ class EconomyCog(commands.Cog):
         temp = await self.bot.fetch_user(member)
         name = temp.name
         try:
-            self.economy[guild].remove_funds(member, amount)
-        except KeyError:
-            self.economy[guild] = GuildEconomy()
+            self._take_funds(guild, member, amount)
         except MoneyError:
             self.economy[guild].remove_all_funds(member)
         await ctx.send(f"Took {amount} munnies from {name}")
@@ -60,13 +54,32 @@ class EconomyCog(commands.Cog):
     async def show_funds(self, ctx):
         guild = ctx.guild.id
         member = ctx.author.id
+        val = self._get_funds(guild, member)
+        await ctx.send(f"You have {val} munnies")
+        
+    def _take_funds(self, guild, member, amount: int):
+        member = channel_utils.convert_to_int(member)
         try:
-            val = self.economy[guild].get_funds(member)
+            self.economy[guild].remove_funds(member, amount)
         except KeyError:
             self.economy[guild] = GuildEconomy()
-            val = 0
-        await ctx.send(f"You have {val} munnies")
             
+    def _give_funds(self, guild, member, amount: int):
+        member = channel_utils.convert_to_int(member)
+        try:
+            self.economy[guild].add_funds(member, amount)
+        except KeyError:
+            self.economy[guild] = GuildEconomy()
+            self.economy[guild].add_funds(member, amount)
+            
+    def _get_funds(self, guild, member):
+        member = channel_utils.convert_to_int(member)
+        try:
+            retval = self.economy[guild].get_funds(member)
+            return retval
+        except KeyError:
+            self.economy[guild] = GuildEconomy()
+            return 0
         
     @commands.Cog.listener()
     async def on_message(self, message):
