@@ -19,6 +19,8 @@ def _try_add_cog(name):
 def _load_cogs():
     logger.log_info("Loading cogs...")
     _try_add_cog("YoutubeCog")
+    _try_add_cog("EconomyCog")
+    _try_add_cog("GambleCog")
     
 def _get_token():
     return environment.TOKEN
