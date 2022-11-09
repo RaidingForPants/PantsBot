@@ -27,7 +27,7 @@ class YoutubeCog(commands.Cog):
         yt_channel_id:
             The ID of the YouTube channel to watch for uploads
         
-        notificiation_channel:
+        notification_channel:
             The text channel to post uploads in
             
         message:
@@ -59,8 +59,7 @@ class YoutubeCog(commands.Cog):
             The ID of the YouTube channel to stop watching
         
         notification_channel:
-            The text channel to stop posting uploads in.
-            Leave blank to stop in all channels.
+            The text channel to stop posting uploads in, leave blank to stop in all channels.
         """
     
         if notification_channel is None:
