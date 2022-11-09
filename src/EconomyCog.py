@@ -49,7 +49,10 @@ class EconomyCog(commands.Cog):
         
         
         self._give_funds(guild, user, amount)
-        await ctx.send(f"Gave {name} {amount} munnies")
+        if amount == 1:
+            await ctx.send(f"Gave {name} {amount} munnie")
+        else:
+            await ctx.send(f"Gave {name} {amount} munnies")
             
         
     @commands.slash_command()
@@ -71,7 +74,10 @@ class EconomyCog(commands.Cog):
             self._take_funds(guild, user, amount)
         except MoneyError:
             self.economy[guild].remove_all_funds(user)
-        await ctx.send(f"Took {amount} munnies from {name}")
+        if amount == 1:
+            await ctx.send(f"Took {amount} munnie from {name}")
+        else:
+            await ctx.send(f"Took {amount} munnies from {name}")
     
     @commands.slash_command()
     @command_utils.toggle_command
@@ -86,7 +92,10 @@ class EconomyCog(commands.Cog):
         
         
         val = self._get_funds(guild, user)
-        await ctx.send(f"You have {val} munnies")
+        if val == 1:
+            await ctx.send(f"You have {val} munnie")
+        else:
+            await ctx.send(f"You have {val} munnies")
         
     @commands.Cog.listener()
     async def on_message(self, message):
