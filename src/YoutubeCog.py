@@ -20,7 +20,18 @@ class YoutubeCog(commands.Cog):
     
         """
         Register for channel updates
-
+        
+        Parameters
+        ----------
+        
+        yt_channel_id:
+            The ID of the YouTube channel to watch for uploads
+        
+        notificiation_channel:
+            The text channel to post uploads in
+            
+        message:
+            A message to include with the video URL
         """
         
         if notification_channel is None:
@@ -42,6 +53,14 @@ class YoutubeCog(commands.Cog):
         """
         Cancels channel updates
         
+        Parameters
+        ----------
+        yt_channel_id:
+            The ID of the YouTube channel to stop watching
+        
+        notification_channel:
+            The text channel to stop posting uploads in.
+            Leave blank to stop in all channels.
         """
     
         if notification_channel is None:
@@ -52,10 +71,6 @@ class YoutubeCog(commands.Cog):
         self.watcher.update()
         self.registry.save()
         await ctx.send("Removed registration!")
-        
-    #@commands.slash_command(description="youtube test")
-    #async def yt_test(self, ctx):
-    #    await ctx.send("youtube cog success")
     
     @tasks.loop(minutes=1.0)
     async def scheduled_check(self):
