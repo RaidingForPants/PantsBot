@@ -12,7 +12,7 @@ import command_utils
 class EconomyCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.enabled = True
+        self.disabled_list = set()
         self.economy = {}
     
     @commands.slash_command()
@@ -21,7 +21,7 @@ class EconomyCog(commands.Cog):
         """
         Enables the munnie economy
         """
-        self.enabled = True
+        self.disabled_list.remove(ctx.guild.id)
         await ctx.send("Economy enabled")
         
     @commands.slash_command()
@@ -30,7 +30,7 @@ class EconomyCog(commands.Cog):
         """
         Disables the munnie economy
         """
-        self.enabled = False
+        self.disabled_list.add(ctx.guild.id)
         await ctx.send("Economy disabled")
     
     @commands.slash_command()
@@ -89,18 +89,18 @@ class EconomyCog(commands.Cog):
         await ctx.send(f"You have {val} munnies")
         
     @commands.Cog.listener()
-    @command_utils.toggle_listener
     async def on_message(self, message):
-        user = message.author.id
-        guild = message.guild.id
-        try:
-            economy_obj = self.economy[guild]
-        except KeyError:
-            self.economy[guild] = GuildEconomy()
-            economy_obj = self.economy[guild]
-        if user not in economy_obj.lock_list:  
-            economy_obj.add_funds(user, 1)
-            economy_obj.lock_user(user, duration=60)
+        if message.guild.id not in self.disabled_list:
+            user = message.author.id
+            guild = message.guild.id
+            try:
+                economy_obj = self.economy[guild]
+            except KeyError:
+                self.economy[guild] = GuildEconomy()
+                economy_obj = self.economy[guild]
+            if user not in economy_obj.lock_list:  
+                economy_obj.add_funds(user, 1)
+                economy_obj.lock_user(user, duration=60)
             
             
     def _take_funds(self, guild, user, amount: int):

@@ -14,7 +14,7 @@ class GambleCog(commands.Cog):
     
     def __init__(self, bot):
         self.bot = bot
-        self.enabled = True
+        self.disabled_list = set()
     
     @commands.slash_command()
     @permissions.requires_administrator
@@ -22,7 +22,7 @@ class GambleCog(commands.Cog):
         """
         Enables the gambling function
         """
-        self.enabled = True
+        self.disabled_list.remove(ctx.guild.id)
         await ctx.send("Gambling enabled")
         
     @commands.slash_command()
@@ -31,7 +31,7 @@ class GambleCog(commands.Cog):
         """
         Disables the gambling function
         """
-        self.enabled = False
+        self.disabled_list.add(ctx.guild.id)
         await ctx.send("Gambling disabled")
         
         
