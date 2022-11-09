@@ -41,18 +41,28 @@ class EconomyCog(commands.Cog):
         Gives munnies to the specified user
         """
         
-        
         guild = ctx.guild.id
         user = channel_utils.convert_to_int(user)
         temp = await self.bot.fetch_user(user)
         name = temp.name
         
-        
-        self._give_funds(guild, user, amount)
-        if amount == 1:
-            await ctx.send(f"Gave {name} {amount} munnie")
+        if amount < 0:
+            amount = abs(amount)
+            try:
+                self._take_funds(guild, user, amount)
+            except MoneyError:
+                self.economy[guild].remove_all_funds(user)
+            if amount == 1:
+                await ctx.send(f"Took {amount} munnie from {name}")
+            else:
+                await ctx.send(f"Took {amount} munnies from {name}")
+            return
         else:
-            await ctx.send(f"Gave {name} {amount} munnies")
+            self._give_funds(guild, user, amount)
+            if amount == 1:
+                await ctx.send(f"Gave {name} {amount} munnie")
+            else:
+                await ctx.send(f"Gave {name} {amount} munnies")
             
         
     @commands.slash_command()
@@ -62,22 +72,29 @@ class EconomyCog(commands.Cog):
         """
         Takes munnies from the specified user
         """
-        
+
         
         guild = ctx.guild.id
         user = channel_utils.convert_to_int(user)
         temp = await self.bot.fetch_user(user)
         name = temp.name
         
-        
-        try:
-            self._take_funds(guild, user, amount)
-        except MoneyError:
-            self.economy[guild].remove_all_funds(user)
-        if amount == 1:
-            await ctx.send(f"Took {amount} munnie from {name}")
-        else:
-            await ctx.send(f"Took {amount} munnies from {name}")
+        if amount < 0:
+            amount = abs(amount)
+            self._give_funds(guild, user, amount)
+            if amount == 1:
+                await ctx.send(f"Gave {name} {amount} munnie")
+            else:
+                await ctx.send(f"Gave {name} {amount} munnies")
+        else: 
+            try:
+                self._take_funds(guild, user, amount)
+            except MoneyError:
+                self.economy[guild].remove_all_funds(user)
+            if amount == 1:
+                await ctx.send(f"Took {amount} munnie from {name}")
+            else:
+                await ctx.send(f"Took {amount} munnies from {name}")
     
     @commands.slash_command()
     @command_utils.toggle_command
