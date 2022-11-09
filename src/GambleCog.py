@@ -5,9 +5,8 @@ A cog for doing gambling stuff
 from disnake.ext import commands, tasks
 import permissions
 import logger
-from EconomyCog import MoneyError
 import random
-import math
+import command_utils
 
 class GambleCog(commands.Cog):
 
@@ -20,18 +19,28 @@ class GambleCog(commands.Cog):
     @commands.slash_command()
     @permissions.requires_administrator
     async def gamble_enable(self, ctx):
+        """
+        Enables the gambling function
+        """
         self.enabled = True
         await ctx.send("Gambling enabled")
         
     @commands.slash_command()
     @permissions.requires_administrator
     async def gamble_disable(self, ctx):
+        """
+        Disables the gambling function
+        """
         self.enabled = False
         await ctx.send("Gambling disabled")
         
         
     @commands.slash_command()
+    @command_utils.toggle_command
     async def gamble(self, ctx, amount: int):
+        """
+        Risk your hard-earned munnies to win big!
+        """
         economy = self.bot.get_cog("EconomyCog")
         if economy is not None:
             money = economy._get_funds(ctx.guild.id, ctx.author.id)

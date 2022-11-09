@@ -7,6 +7,7 @@ import permissions
 import logger
 import threading
 import channel_utils
+import command_utils
 
 class EconomyCog(commands.Cog):
     def __init__(self, bot):
@@ -17,33 +18,55 @@ class EconomyCog(commands.Cog):
     @commands.slash_command()
     @permissions.requires_administrator
     async def economy_enable(self, ctx):
+        """
+        Enables the munnie economy
+        """
         self.enabled = True
         await ctx.send("Economy enabled")
         
     @commands.slash_command()
     @permissions.requires_administrator
     async def economy_disable(self, ctx):
+        """
+        Disables the munnie economy
+        """
         self.enabled = False
         await ctx.send("Economy disabled")
     
     @commands.slash_command()
+    @command_utils.toggle_command
     @permissions.requires_administrator    
-    async def give_funds(self, ctx, member, amount: int):
+    async def give_munnies(self, ctx, member, amount: int):
+        """
+        Gives munnies to the specified user
+        """
+        
+        
         guild = ctx.guild.id
         member = channel_utils.convert_to_int(member)
         temp = await self.bot.fetch_user(member)
         name = temp.name
+        
+        
         self._give_funds(guild, member, amount)
         await ctx.send(f"Gave {name} {amount} munnies")
             
         
     @commands.slash_command()
+    @command_utils.toggle_command
     @permissions.requires_administrator        
-    async def take_funds(self, ctx, member, amount: int):
+    async def take_munnies(self, ctx, member, amount: int):
+        """
+        Takes munnies from the specified user
+        """
+        
+        
         guild = ctx.guild.id
         member = channel_utils.convert_to_int(member)
         temp = await self.bot.fetch_user(member)
         name = temp.name
+        
+        
         try:
             self._take_funds(guild, member, amount)
         except MoneyError:
@@ -51,37 +74,22 @@ class EconomyCog(commands.Cog):
         await ctx.send(f"Took {amount} munnies from {name}")
     
     @commands.slash_command()
-    async def show_funds(self, ctx):
+    @command_utils.toggle_command
+    async def show_munnies(self, ctx):
+        """
+        Shows your current amount of munnies
+        """
+        
+        
         guild = ctx.guild.id
         member = ctx.author.id
+        
+        
         val = self._get_funds(guild, member)
         await ctx.send(f"You have {val} munnies")
         
-    def _take_funds(self, guild, member, amount: int):
-        member = channel_utils.convert_to_int(member)
-        try:
-            self.economy[guild].remove_funds(member, amount)
-        except KeyError:
-            self.economy[guild] = GuildEconomy()
-            
-    def _give_funds(self, guild, member, amount: int):
-        member = channel_utils.convert_to_int(member)
-        try:
-            self.economy[guild].add_funds(member, amount)
-        except KeyError:
-            self.economy[guild] = GuildEconomy()
-            self.economy[guild].add_funds(member, amount)
-            
-    def _get_funds(self, guild, member):
-        member = channel_utils.convert_to_int(member)
-        try:
-            retval = self.economy[guild].get_funds(member)
-            return retval
-        except KeyError:
-            self.economy[guild] = GuildEconomy()
-            return 0
-        
     @commands.Cog.listener()
+    @command_utils.toggle_listener
     async def on_message(self, message):
         member = message.author.id
         guild = message.guild.id
@@ -93,6 +101,31 @@ class EconomyCog(commands.Cog):
         if member not in economy_obj.lock_list:  
             economy_obj.add_funds(member, 1)
             economy_obj.lock_user(member, duration=60)
+            
+            
+    def _take_funds(self, guild, member, amount: int):
+        member = channel_utils.convert_to_int(member)
+        try:
+            self.economy[guild].remove_funds(member, amount)
+        except KeyError:
+            self.economy[guild] = GuildEconomy()
+    
+    def _give_funds(self, guild, member, amount: int):
+        member = channel_utils.convert_to_int(member)
+        try:
+            self.economy[guild].add_funds(member, amount)
+        except KeyError:
+            self.economy[guild] = GuildEconomy()
+            self.economy[guild].add_funds(member, amount)
+
+    def _get_funds(self, guild, member):
+        member = channel_utils.convert_to_int(member)
+        try:
+            retval = self.economy[guild].get_funds(member)
+            return retval
+        except KeyError:
+            self.economy[guild] = GuildEconomy()
+            return 0
         
         
 class GuildEconomy:
@@ -111,10 +144,10 @@ class GuildEconomy:
             if self.bank[member] >= amount:
                 self.bank[member] -= amount
             else:
-                raise MoneyError("Not enough funds!")
+                raise MoneyError("Not enough munnies!")
         except KeyError:
             self.bank[member] = 0
-            raise MoneyError("Not enough funds!")
+            raise MoneyError("Not enough munnies!")
             
     def get_funds(self, member):
         try:
@@ -138,3 +171,4 @@ class GuildEconomy:
         
 class MoneyError(Exception):
     pass
+    
